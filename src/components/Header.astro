@@ -1,0 +1,53 @@
+---
+import { SITE_TITLE, NAV_LINKS } from '../consts';
+import ThemeToggle from './ThemeToggle.astro';
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+function isActive(href: string) {
+	if (href === '/') return pathname === '/';
+	return pathname === href || pathname.startsWith(href + '/');
+}
+---
+
+<header class="sticky top-0 z-50 border-b border-rule bg-bg/85 backdrop-blur-md">
+	<div class="mx-auto flex max-w-[var(--container-measure)] flex-wrap items-center gap-6 px-5 py-3">
+		<a
+			class="font-serif text-[1.35rem] font-bold tracking-[-0.01em] text-fg no-underline"
+			style="font-optical-sizing: auto; font-variation-settings: 'opsz' 144, 'SOFT' 100;"
+			href="/"
+		>
+			{SITE_TITLE}
+		</a>
+		<nav class="ml-auto" aria-label="Primary">
+			<ul class="m-0 flex list-none flex-wrap items-center gap-6 p-0">
+				{NAV_LINKS.map((link) => {
+					const active = isActive(link.href);
+					return (
+						<li>
+							<a
+								href={link.href}
+								aria-current={active ? 'page' : undefined}
+								class:list={[
+									'group relative inline-block py-1 font-sans text-[0.9rem] font-medium no-underline transition-colors duration-200 ease-in-out',
+									active ? 'text-fg' : 'text-fg-muted hover:text-fg',
+								]}
+							>
+								<span>{link.label}</span>
+								<span
+									class:list={[
+										'absolute -bottom-0.5 left-0 h-[1.5px] bg-accent transition-all duration-300 ease-out',
+										active
+											? 'w-full'
+											: 'w-0 group-hover:w-full',
+									]}
+									aria-hidden="true"
+								></span>
+							</a>
+						</li>
+					);
+				})}
+			</ul>
+		</nav>
+		<ThemeToggle />
+	</div>
+</header>

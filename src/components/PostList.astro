@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	posts: CollectionEntry<'blog'>[];
+	heading?: string;
+	headingClass?: string;
+}
+const {
+	posts,
+	heading,
+	headingClass = 'mt-10 mb-4 text-[0.85rem] font-semibold uppercase tracking-[0.08em] text-fg-muted',
+} = Astro.props;
+---
+
+{heading && (
+	<h2 class={headingClass}>
+		{heading}
+	</h2>
+)}
+
+{posts.length === 0 ? (
+	<p class="text-fg-muted">No posts yet.</p>
+) : (
+	<ul class="m-0 list-none p-0">
+		{posts.map((post) => (
+			<li class="group border-b border-rule py-[1.125rem] transition-transform duration-200 ease-out last:border-b-0 hover:translate-x-[3px]">
+				<a
+					href={`/blog/${post.id}/`}
+					class="flex flex-col items-baseline gap-1 text-fg no-underline sm:flex-row sm:justify-between sm:gap-4"
+				>
+					<span class="text-[1.05rem] font-medium text-fg underline decoration-transparent underline-offset-4 transition-all duration-200 ease-in-out group-hover:text-accent group-hover:decoration-accent">
+						{post.data.title}
+					</span>
+					<span class="shrink-0 text-[0.85rem] text-fg-muted tabular-nums">
+						<FormattedDate date={post.data.pubDate} />
+					</span>
+				</a>
+				{post.data.description && (
+					<p class="mt-1 mb-0 text-[0.95rem] leading-snug text-fg-muted">
+						{post.data.description}
+					</p>
+				)}
+			</li>
+		))}
+	</ul>
+)}

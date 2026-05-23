@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+const counts = new Map<string, number>();
+for (const post of posts) {
+	for (const tag of post.data.tags) {
+		counts.set(tag, (counts.get(tag) ?? 0) + 1);
+	}
+}
+const tags = [...counts.entries()].sort((a, b) =>
+	b[1] - a[1] || a[0].localeCompare(b[0]),
+);
+---
+
+<Layout title="Tags" description="Browse posts by tag.">
+	<h1>Tags</h1>
+	<p class="-mt-2 text-fg-muted">{tags.length} tag{tags.length === 1 ? '' : 's'}.</p>
+
+	{tags.length === 0 ? (
+		<p>No tags yet.</p>
+	) : (
+		<ul class="m-0 mt-6 flex list-none flex-wrap gap-2 p-0">
+			{tags.map(([tag, count]) => (
+				<li>
+					<a
+						href={`/tags/${tag}/`}
+						class="group inline-flex items-center gap-2 rounded-full border border-rule bg-bg-soft px-3 py-1 text-[0.85rem] text-fg no-underline transition-colors duration-200 ease-in-out hover:border-accent hover:bg-bg hover:text-accent"
+					>
+						<span>#{tag}</span>
+						<span class="text-[0.75rem] text-fg-muted tabular-nums group-hover:text-accent">{count}</span>
+					</a>
+				</li>
+			))}
+		</ul>
+	)}
+</Layout>

@@ -1,0 +1,252 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+// Group posts by year.
+const byYear = new Map<number, typeof posts>();
+for (const post of posts) {
+	const y = post.data.pubDate.getFullYear();
+	if (!byYear.has(y)) byYear.set(y, []);
+	byYear.get(y)!.push(post);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+
+// Language stats for the filter buttons.
+const enCount = posts.filter((p) => (p.data.lang ?? 'en').startsWith('en')).length;
+const zhCount = posts.filter((p) => (p.data.lang ?? 'en').startsWith('zh')).length;
+
+// Tag cloud (sorted by count desc, then name asc).
+const tagCounts = new Map<string, number>();
+for (const p of posts) {
+	for (const t of p.data.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+}
+const tags = [...tagCounts.entries()].sort(
+	(a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+);
+const VISIBLE = 6;
+const initiallyVisible = tags.slice(0, VISIBLE);
+const hidden = tags.slice(VISIBLE);
+---
+
+<Layout title="Writing" description="All posts.">
+	<h1>Writing</h1>
+	<p class="-mt-2 mb-6 text-fg-muted">
+		{posts.length} post{posts.length === 1 ? '' : 's'}, newest first.
+	</p>
+
+	{/* Language filter */}
+	<div class="mb-10 flex flex-wrap gap-2" role="group" aria-label="Filter posts by language">
+		<button
+			type="button"
+			data-lang-filter="all"
+			class="lang-filter-btn is-active"
+		>
+			All <span class="opacity-60">{posts.length}</span>
+		</button>
+		<button
+			type="button"
+			data-lang-filter="en"
+			class="lang-filter-btn"
+		>
+			English <span class="opacity-60">{enCount}</span>
+		</button>
+		<button
+			type="button"
+			data-lang-filter="zh"
+			class="lang-filter-btn"
+		>
+			中文 <span class="opacity-60">{zhCount}</span>
+		</button>
+	</div>
+
+	{/* Year groups */}
+	{years.map((year) => {
+		const yearPosts = byYear.get(year)!;
+		return (
+			<section class="year-group mb-12" data-year={year}>
+				<header class="mb-4 flex items-baseline justify-between border-b border-rule pb-2">
+					<h2 class="m-0 font-serif text-[2.4rem] font-semibold leading-none tracking-[-0.02em] text-fg">
+						{year}
+					</h2>
+					<span class="font-mono text-[0.72rem] uppercase tracking-[0.12em] text-fg-muted">
+						<span data-year-count>{yearPosts.length}</span> {yearPosts.length === 1 ? 'post' : 'posts'}
+					</span>
+				</header>
+
+				<ul class="m-0 list-none p-0">
+					{yearPosts.map((post) => {
+						const lang = (post.data.lang ?? 'en').startsWith('zh') ? 'zh' : 'en';
+						return (
+							<li
+								class="group post-item border-b border-rule py-4 transition-transform duration-200 ease-out last:border-b-0 hover:translate-x-[3px]"
+								data-post-lang={lang}
+							>
+								<a
+									href={`/blog/${post.id}/`}
+									class="flex flex-col gap-2 text-fg no-underline sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+								>
+									<span class="flex-1">
+										<span class="block text-[1.05rem] font-medium text-fg underline decoration-transparent underline-offset-4 transition-all duration-200 ease-in-out group-hover:text-accent group-hover:decoration-accent">
+											{post.data.title}
+										</span>
+										{post.data.description && (
+											<span class="mt-1 block font-sans text-[0.9rem] leading-snug text-fg-muted">
+												{post.data.description}
+											</span>
+										)}
+									</span>
+									<span class="shrink-0 font-mono text-[0.78rem] text-fg-muted tabular-nums sm:pt-1">
+										<FormattedDate date={post.data.pubDate} />
+									</span>
+								</a>
+							</li>
+						);
+					})}
+				</ul>
+
+				<p
+					class="empty-state mt-4 hidden font-sans text-[0.9rem] italic text-fg-muted"
+					data-year-empty
+				>
+					No posts in this language for {year}.
+				</p>
+			</section>
+		);
+	})}
+
+	{tags.length > 0 && (
+		<aside
+			class="pointer-events-none fixed top-24 right-6 z-10 hidden max-h-[calc(100vh-8rem)] w-56 overflow-y-auto xl:block"
+			aria-label="Tag cloud"
+		>
+			<div class="pointer-events-auto">
+				<p class="mb-3 text-[0.85rem] font-semibold uppercase tracking-[0.08em] text-fg-muted">
+					Topics
+				</p>
+				<ul id="tag-cloud" class="m-0 flex list-none flex-wrap items-center gap-2 p-0">
+					{initiallyVisible.map(([tag, count]) => (
+						<li>
+							<a
+								href={`/tags/${tag}/`}
+								class="group inline-flex items-center gap-1.5 rounded-full border border-rule bg-bg-soft px-2.5 py-[0.2rem] font-sans text-[0.78rem] text-fg no-underline transition-colors duration-200 ease-in-out hover:border-accent hover:bg-bg hover:text-accent"
+							>
+								<span>#{tag}</span>
+								<span class="font-mono text-[0.68rem] text-fg-muted tabular-nums group-hover:text-accent">{count}</span>
+							</a>
+						</li>
+					))}
+					{hidden.map(([tag, count]) => (
+						<li data-tag-hidden class="hidden">
+							<a
+								href={`/tags/${tag}/`}
+								class="group inline-flex items-center gap-1.5 rounded-full border border-rule bg-bg-soft px-2.5 py-[0.2rem] font-sans text-[0.78rem] text-fg no-underline transition-colors duration-200 ease-in-out hover:border-accent hover:bg-bg hover:text-accent"
+							>
+								<span>#{tag}</span>
+								<span class="font-mono text-[0.68rem] text-fg-muted tabular-nums group-hover:text-accent">{count}</span>
+							</a>
+						</li>
+					))}
+					{hidden.length > 0 && (
+						<li>
+							<button
+								type="button"
+								id="tag-toggle"
+								data-expanded="false"
+								aria-controls="tag-cloud"
+								aria-expanded="false"
+								class="inline-flex items-center rounded-full border border-transparent bg-transparent px-2 py-[0.2rem] font-sans text-[0.78rem] text-fg-muted no-underline underline-offset-4 transition-colors duration-200 ease-in-out hover:text-fg hover:underline"
+							>
+								<span data-tag-toggle-label>Show all ({tags.length})</span>
+							</button>
+						</li>
+					)}
+				</ul>
+			</div>
+		</aside>
+	)}
+</Layout>
+
+<style>
+	.lang-filter-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.35rem 0.85rem;
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--color-fg-muted);
+		background: var(--color-bg);
+		border: 1px solid var(--color-rule);
+		border-radius: 999px;
+		cursor: pointer;
+		transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+	}
+	.lang-filter-btn:hover {
+		color: var(--color-fg);
+		border-color: var(--color-fg-muted);
+	}
+	.lang-filter-btn.is-active {
+		color: var(--color-accent);
+		border-color: var(--color-accent);
+		background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+	}
+</style>
+
+<script>
+	const buttons = document.querySelectorAll<HTMLButtonElement>('[data-lang-filter]');
+	const items = document.querySelectorAll<HTMLElement>('.post-item');
+	const yearGroups = document.querySelectorAll<HTMLElement>('.year-group');
+
+	function applyFilter(lang: string) {
+		items.forEach((el) => {
+			const matches = lang === 'all' || el.dataset.postLang === lang;
+			el.style.display = matches ? '' : 'none';
+		});
+
+		// Update visible counts per year + show empty state if needed.
+		yearGroups.forEach((group) => {
+			const visible = group.querySelectorAll<HTMLElement>(
+				'.post-item:not([style*="display: none"])',
+			);
+			const countEl = group.querySelector<HTMLElement>('[data-year-count]');
+			const emptyEl = group.querySelector<HTMLElement>('[data-year-empty]');
+			if (countEl) countEl.textContent = String(visible.length);
+			if (emptyEl) emptyEl.classList.toggle('hidden', visible.length > 0);
+		});
+
+		buttons.forEach((b) => {
+			b.classList.toggle('is-active', b.dataset.langFilter === lang);
+		});
+	}
+
+	buttons.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const lang = btn.dataset.langFilter ?? 'all';
+			applyFilter(lang);
+		});
+	});
+
+	// Tag cloud expand/collapse.
+	const tagToggle = document.getElementById('tag-toggle');
+	const hiddenTags = document.querySelectorAll<HTMLElement>('[data-tag-hidden]');
+	const tagLabel = document.querySelector<HTMLElement>('[data-tag-toggle-label]');
+	const hiddenCount = hiddenTags.length;
+	const totalCount = hiddenCount + 6;
+
+	if (tagToggle && tagLabel) {
+		tagToggle.addEventListener('click', () => {
+			const expanded = tagToggle.dataset.expanded === 'true';
+			const next = !expanded;
+			hiddenTags.forEach((el) => el.classList.toggle('hidden', !next));
+			tagToggle.dataset.expanded = String(next);
+			tagToggle.setAttribute('aria-expanded', String(next));
+			tagLabel.textContent = next ? 'Show less' : `Show all (${totalCount})`;
+		});
+	}
+</script>

@@ -1,23 +1,122 @@
+---
+import '../styles/global.css';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+	title?: string;
+	description?: string;
+	pageType?: 'website' | 'article';
+	publishedTime?: Date;
+	lang?: string;
+}
+
+const {
+	title,
+	description = SITE_DESCRIPTION,
+	pageType = 'website',
+	publishedTime,
+	lang = 'en',
+} = Astro.props;
+
+const fullTitle = title ? `${title} — ${SITE_TITLE}` : SITE_TITLE;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+---
+
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,30..100,0..1&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap"
+		/>
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+
+		<meta property="og:type" content={pageType} />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		{publishedTime && (
+			<meta property="article:published_time" content={publishedTime.toISOString()} />
+		)}
+
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content={fullTitle} />
+		<meta name="twitter:description" content={description} />
+
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title={SITE_TITLE}
+			href={new URL('rss.xml', Astro.site ?? Astro.url)}
+		/>
+
+		{/* Set theme before paint to avoid FOUC. */}
+		<script is:inline>
+			(function () {
+				try {
+					const stored = localStorage.getItem('theme');
+					const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+					const theme = stored ?? (prefersDark ? 'dark' : 'light');
+					if (theme === 'dark') {
+						document.documentElement.classList.add('dark');
+					}
+				} catch (_) {
+					/* default = light */
+				}
+			})();
+		</script>
 	</head>
 	<body>
-		<slot />
+		<a class="skip-link absolute -left-[9999px] top-0 focus:left-4 focus:top-4 focus:z-10 focus:rounded-card focus:border focus:border-rule focus:bg-bg focus:px-3 focus:py-2" href="#main">Skip to content</a>
+		<Header />
+		<main id="main" class="mx-auto w-full max-w-[var(--container-measure)] flex-1 px-5 pt-8 pb-16">
+			<slot />
+		</main>
+		<Footer />
+
+		{/* Inject copy buttons into rehype-pretty-code blocks. */}
+		<script>
+			document
+				.querySelectorAll<HTMLElement>('figure[data-rehype-pretty-code-figure]')
+				.forEach((figure) => {
+					if (figure.querySelector('.code-copy-btn')) return;
+					const code = figure.querySelector('pre > code');
+					if (!code) return;
+
+					const btn = document.createElement('button');
+					btn.type = 'button';
+					btn.className = 'code-copy-btn';
+					btn.setAttribute('aria-label', 'Copy code to clipboard');
+					btn.textContent = 'Copy';
+					btn.addEventListener('click', async () => {
+						try {
+							await navigator.clipboard.writeText(
+								(code as HTMLElement).innerText,
+							);
+							btn.textContent = 'Copied';
+							btn.classList.add('is-copied');
+							setTimeout(() => {
+								btn.textContent = 'Copy';
+								btn.classList.remove('is-copied');
+							}, 1500);
+						} catch (_) {
+							btn.textContent = 'Failed';
+							setTimeout(() => (btn.textContent = 'Copy'), 1500);
+						}
+					});
+					figure.appendChild(btn);
+				});
+		</script>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

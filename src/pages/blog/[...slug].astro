@@ -1,0 +1,111 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import readingTime from 'reading-time';
+import Layout from '../../layouts/Layout.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+
+export const getStaticPaths = (async () => {
+	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: { post },
+	}));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Reading time. For CJK posts, reading-time underestimates because it splits on whitespace;
+// approximate by treating each CJK character as a word.
+const isCJK = (post.data.lang ?? 'en').startsWith('zh');
+const body = post.body ?? '';
+const readMinutes = isCJK
+	? Math.max(1, Math.ceil([...body].filter((c) => /\p{Script=Han}/u.test(c)).length / 400))
+	: Math.max(1, Math.round(readingTime(body).minutes));
+---
+
+<Layout
+	title={post.data.title}
+	description={post.data.description}
+	pageType="article"
+	publishedTime={post.data.pubDate}
+	lang={post.data.lang}
+>
+	<article>
+		<header class="post-header">
+			<h1>{post.data.title}</h1>
+			<div class="meta">
+				<FormattedDate date={post.data.pubDate} />
+				<span class="dot" aria-hidden="true">·</span>
+				<span>{readMinutes} min read</span>
+				{post.data.updatedDate && (
+					<>
+						<span class="dot" aria-hidden="true">·</span>
+						<span class="updated">Updated <FormattedDate date={post.data.updatedDate} /></span>
+					</>
+				)}
+			</div>
+			{post.data.tags.length > 0 && (
+				<ul class="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
+					{post.data.tags.map((tag) => (
+						<li>
+							<a
+								href={`/tags/${tag}/`}
+								class="inline-flex items-center rounded-full border border-rule bg-bg-soft px-[0.6rem] py-[0.15rem] text-[0.8rem] text-fg-muted no-underline transition-colors duration-200 ease-in-out hover:border-accent hover:bg-bg hover:text-accent"
+							>#{tag}</a>
+						</li>
+					))}
+				</ul>
+			)}
+		</header>
+
+		<div class="prose">
+			<Content />
+		</div>
+
+		<nav class="post-nav">
+			<a href="/blog">← All posts</a>
+		</nav>
+	</article>
+
+	{/* Sticky TOC sidebar — hidden below xl breakpoint to avoid collision with content column. */}
+	<aside
+		class="pointer-events-none fixed top-24 right-6 z-10 hidden max-h-[calc(100vh-8rem)] w-56 overflow-y-auto xl:block"
+		aria-hidden="false"
+	>
+		<div class="pointer-events-auto">
+			<TableOfContents headings={headings} />
+		</div>
+	</aside>
+</Layout>
+
+<style>
+	.post-header {
+		margin-bottom: 2rem;
+	}
+	.post-header h1 {
+		margin-bottom: 0.3em;
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.6rem;
+		color: var(--color-fg-muted);
+		font-size: 0.9rem;
+	}
+	.meta .dot {
+		opacity: 0.5;
+	}
+	.updated {
+		color: var(--color-fg-muted);
+	}
+	.post-nav {
+		margin-top: 3rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--color-rule);
+		font-size: 0.95rem;
+	}
+</style>

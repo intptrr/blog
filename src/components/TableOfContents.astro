@@ -1,0 +1,115 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	headings: MarkdownHeading[];
+	minHeadings?: number;
+}
+
+const { headings, minHeadings = 3 } = Astro.props;
+// Filter to h2-h6 (skip the post title h1).
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= 6);
+const shouldRender = items.length >= minHeadings;
+---
+
+{shouldRender && (
+	<nav class="toc font-sans text-[0.85rem]" aria-label="Table of contents">
+		<p class="mb-3 font-mono text-[0.7rem] font-medium uppercase tracking-[0.18em] text-fg-muted">
+			On this page
+		</p>
+		<ul class="m-0 list-none space-y-1.5 border-l border-rule p-0">
+			{items.map((h) => (
+				<li>
+					<a
+						href={`#${h.slug}`}
+						data-toc-link
+						data-toc-target={h.slug}
+						style={`padding-left: ${(h.depth - 2) * 0.85 + 0.85}rem;`}
+						class="toc-link -ml-px block border-l border-transparent py-1 leading-snug text-fg-muted no-underline transition-colors duration-200 ease-in-out hover:text-fg"
+					>
+						{h.text}
+					</a>
+				</li>
+			))}
+		</ul>
+	</nav>
+)}
+
+<style>
+	.toc-link.is-active {
+		color: var(--color-accent);
+		border-left-color: var(--color-accent);
+	}
+</style>
+
+<script>
+	const links = Array.from(
+		document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'),
+	);
+	if (links.length > 0) {
+		const targets = links
+			.map((a) => {
+				const id = a.getAttribute('data-toc-target');
+				return id ? document.getElementById(id) : null;
+			})
+			.filter((el): el is HTMLElement => el !== null);
+
+		const linkByTarget = new Map<string, HTMLAnchorElement>();
+		links.forEach((a) => {
+			const id = a.getAttribute('data-toc-target');
+			if (id) linkByTarget.set(id, a);
+		});
+
+		const visible = new Set<string>();
+
+		function setActive() {
+			// Pick the topmost visible heading; fall back to last passed if none.
+			let activeId: string | null = null;
+
+			if (visible.size > 0) {
+				// Choose the heading nearest the top of the viewport (smallest top offset >= 0).
+				let best: { id: string; top: number } | null = null;
+				visible.forEach((id) => {
+					const el = document.getElementById(id);
+					if (!el) return;
+					const top = el.getBoundingClientRect().top;
+					if (!best || top < best.top) best = { id, top };
+				});
+				activeId = best ? best.id : null;
+			} else {
+				// Nothing in view: find the last heading whose top is above the viewport.
+				let lastPassed: string | null = null;
+				targets.forEach((el) => {
+					if (el.getBoundingClientRect().top < 0) lastPassed = el.id;
+				});
+				activeId = lastPassed;
+			}
+
+			links.forEach((a) => a.classList.remove('is-active'));
+			if (activeId) {
+				const link = linkByTarget.get(activeId);
+				link?.classList.add('is-active');
+			}
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					const id = entry.target.id;
+					if (entry.isIntersecting) visible.add(id);
+					else visible.delete(id);
+				}
+				setActive();
+			},
+			{
+				// Offset for sticky header (~56px) + a little buffer.
+				rootMargin: '-80px 0px -60% 0px',
+				threshold: 0,
+			},
+		);
+
+		targets.forEach((el) => observer.observe(el));
+		// Initial state.
+		setActive();
+	}
+</script>

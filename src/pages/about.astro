@@ -1,0 +1,94 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE_AUTHOR, SITE_EMAIL } from '../consts';
+
+const links = [
+	{ label: 'Email', href: `mailto:${SITE_EMAIL}`, value: SITE_EMAIL },
+	{ label: 'GitHub', href: 'https://github.com/', value: '@intptrr' },
+	{ label: 'RSS', href: '/rss.xml', value: 'subscribe' },
+];
+
+const now = [
+	{ label: 'Building', value: 'a small Rust compiler for a toy language.' },
+	{ label: 'Reading', value: '“Designing Data-Intensive Applications” for the third time.' },
+	{ label: 'Listening', value: 'mostly ambient and lo-fi while writing.' },
+	{ label: 'Avoiding', value: 'JavaScript framework hype cycles.' },
+];
+
+const timeline = [
+	{ year: '2024', text: 'Started keeping notes in public.' },
+	{ year: '2022', text: 'Moved from web work to systems and compilers.' },
+	{ year: '2019', text: 'First production Rust deploy. No regrets.' },
+	{ year: '2014', text: 'First paid line of code. Many regrets.' },
+];
+---
+
+<Layout title="About" description={`A short bio of ${SITE_AUTHOR}.`}>
+	<h1>About</h1>
+	<p class="-mt-2 mb-8 max-w-[38rem] text-fg-muted">
+		Hi, I'm <strong class="text-fg">{SITE_AUTHOR}</strong>. I write software for a
+		living and write about it to figure out what I actually think. This site has
+		no analytics, no comment section, and no tracking. If something here was
+		useful, infuriating, wrong, or worth following up on, send me an email.
+	</p>
+
+	<div class="prose">
+		<pre><code class="language-rust">{`struct Developer {
+    name: "${SITE_AUTHOR}",
+    stack: ["Rust", "TypeScript", "Linux", "Compilers"],
+    status: "allocating_mem",
+    leaks_detected: true,
+}`}</code></pre>
+
+		<h2 class="!mb-3 font-mono !text-[0.85rem] !font-semibold uppercase !tracking-[0.12em] text-fg-muted">
+			Currently
+		</h2>
+		<dl class="!mt-3 !mb-10 grid grid-cols-[7rem_1fr] gap-x-5 gap-y-2 font-sans text-[0.95rem]">
+			{now.map((row) => (
+				<>
+					<dt class="text-fg-muted">{row.label}</dt>
+					<dd class="m-0 text-fg">{row.value}</dd>
+				</>
+			))}
+		</dl>
+
+		<h2 class="!mb-3 font-mono !text-[0.85rem] !font-semibold uppercase !tracking-[0.12em] text-fg-muted">
+			Elsewhere
+		</h2>
+		<ul class="!mt-3 !mb-10 !list-none !pl-0">
+			{links.map((link) => (
+				<li class="!mb-2 !pl-0 flex flex-wrap items-baseline gap-x-3 before:!hidden">
+					<span class="w-[7rem] shrink-0 font-sans text-[0.9rem] text-fg-muted">{link.label}</span>
+					<a href={link.href} class="font-sans text-[0.95rem]">{link.value}</a>
+				</li>
+			))}
+		</ul>
+
+		<h2 class="!mb-3 font-mono !text-[0.85rem] !font-semibold uppercase !tracking-[0.12em] text-fg-muted">
+			A short history
+		</h2>
+		<ol class="!mt-3 !mb-10 !list-none !pl-0 border-l border-rule">
+			{timeline.map((item) => (
+				<li class="!mb-3 !pl-5 relative before:!hidden">
+					<span class="absolute -left-[5px] top-[0.55rem] block h-2 w-2 rounded-full bg-accent" aria-hidden="true"></span>
+					<span class="block font-mono text-[0.78rem] font-medium uppercase tracking-[0.12em] text-fg-muted">{item.year}</span>
+					<span class="block font-sans text-[0.95rem] text-fg">{item.text}</span>
+				</li>
+			))}
+		</ol>
+
+		<h2 class="!mb-3 font-mono !text-[0.85rem] !font-semibold uppercase !tracking-[0.12em] text-fg-muted">
+			Colophon
+		</h2>
+		<p class="!mt-3 font-sans text-[0.95rem] text-fg-muted">
+			Built with <a href="https://astro.build">Astro</a> and
+			<a href="https://tailwindcss.com">Tailwind&nbsp;CSS</a>. Set in
+			<a href="https://fonts.google.com/specimen/Fraunces">Fraunces</a> (serif),
+			<a href="https://rsms.me/inter/">Inter</a> (sans), and the system monospace.
+			Code blocks rendered with
+			<a href="https://rehype-pretty.pages.dev/">rehype-pretty-code</a> +
+			<a href="https://shiki.style/">Shiki</a>. Source on
+			<a href="https://github.com/">GitHub</a>.
+		</p>
+	</div>
+</Layout>

@@ -1,46 +1,72 @@
-# Astro Starter Kit: Basics
+# MEMORY.LEAK — personal blog
 
-```sh
-pnpm create astro@latest -- --template basics
-```
+A small, fast, dependency-light personal blog built with [Astro](https://astro.build).
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Stack
 
-## 🚀 Project Structure
+- **Astro 6** with content collections for Markdown posts
+- **System serif** typography, minimal CSS, no UI framework
+- **Light/dark** theme toggle with `localStorage` persistence (no FOUC)
+- **RSS feed** at `/rss.xml`
+- **Tags** with per-tag pages
 
-Inside of your Astro project, you'll see the following folders and files:
+## Project structure
 
 ```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
+.
+├── public/                     Static assets (favicon, etc.)
+├── src/
+│   ├── components/             Header, Footer, PostList, ThemeToggle, FormattedDate
+│   ├── content/
+│   │   └── blog/               Markdown posts (one .md file per post)
+│   ├── layouts/
+│   │   └── Layout.astro        Base HTML, meta tags, global styles, theme bootstrap
+│   ├── pages/
+│   │   ├── index.astro         Home (intro + recent posts)
+│   │   ├── about.astro         About page
+│   │   ├── blog/
+│   │   │   ├── index.astro     All posts, grouped by year
+│   │   │   └── [...slug].astro Individual post
+│   │   ├── tags/
+│   │   │   ├── index.astro     Tag cloud
+│   │   │   └── [tag].astro     Posts for a single tag
+│   │   └── rss.xml.js          RSS feed endpoint
+│   ├── consts.ts               Site title, description, nav links
+│   └── content.config.ts       Blog collection schema
+├── astro.config.mjs
 └── package.json
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Writing a post
 
-## 🧞 Commands
+Create a new Markdown file in `src/content/blog/`. The filename becomes the URL slug.
 
-All commands are run from the root of the project, from a terminal:
+```markdown
+---
+title: "Post title"
+description: "Optional one-line summary used in lists and meta tags."
+pubDate: 2026-05-23
+updatedDate: 2026-06-01     # optional
+tags: ["writing", "meta"]   # optional, drives /tags pages
+draft: false                # optional; drafts are hidden everywhere
+---
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+Post body in Markdown.
+```
 
-## 👀 Want to learn more?
+## Commands
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+| Command         | Action                                       |
+| :-------------- | :------------------------------------------- |
+| `pnpm install`  | Install dependencies                         |
+| `pnpm dev`      | Start dev server at `localhost:4321`         |
+| `pnpm build`    | Build production site to `./dist/`           |
+| `pnpm preview`  | Preview the production build locally         |
+| `pnpm astro …`  | Run any Astro CLI command                    |
+
+## Configuration
+
+Before deploying, update:
+
+- `astro.config.mjs` — set `site` to your production URL (used by RSS and canonical tags).
+- `src/consts.ts` — `SITE_TITLE`, `SITE_DESCRIPTION`, `SITE_EMAIL`, nav links.

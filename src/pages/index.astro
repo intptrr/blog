@@ -1,11 +1,38 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import PostList from '../components/PostList.astro';
+import { SITE_AUTHOR } from '../consts';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 5);
 ---
 
 <Layout>
-	<Welcome />
+	<section class="pt-6 pb-0">
+		<p class="mb-5 font-mono text-[0.78rem] font-medium uppercase tracking-[0.18em] text-fg-muted">
+			personal log
+		</p>
+		<h1 class="mb-6 text-[clamp(2.4rem,5vw,3.4rem)] font-semibold leading-[1.05] tracking-[-0.035em] text-balance">
+			Notes from <span class="italic text-accent">{SITE_AUTHOR}</span> on software,
+			systems, and the things in between.
+		</h1>
+		<p class="max-w-[38rem] font-sans text-[1.05rem] leading-relaxed text-fg-muted">
+			A small corner of the internet for what I read, build, and change my mind about.
+			Subscribe via <a href="/rss.xml">RSS</a>, browse
+			<a href="/blog">everything I've written</a>, or read a bit
+			<a href="/about">about me</a>.
+		</p>
+	</section>
+
+	<PostList
+		posts={posts}
+		heading="Recent writing"
+		headingClass="mt-12 mb-4 text-[0.85rem] font-semibold uppercase tracking-[0.08em] text-fg-muted"
+	/>
+
+	<p class="mt-6 mb-6 font-sans text-[0.95rem]">
+		<a href="/blog">All posts →</a>
+	</p>
 </Layout>
