@@ -1,11 +1,19 @@
 @import "tailwindcss";
 
+/* Self-host Noto Serif SC SemiBold (weight 600) only — used for CJK text.
+   We re-register it at weight 400 below so Chinese characters render at
+   SemiBold by default, without affecting Latin weight. */
+@import "@fontsource/noto-serif-sc/chinese-simplified-600.css";
+
 /* Tailwind v4: class-based dark mode triggered by `.dark` on <html>. */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-serif: 'Fraunces', ui-serif, Georgia, Cambria, 'Times New Roman', Times, 'Noto Serif CJK SC', 'Source Han Serif SC', 'Source Han Serif CN', 'Songti SC', 'STSong', 'SimSun', serif;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  --font-serif: 'Fraunces', 'Noto Serif SC', 'CJK Fallback', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  /* CJK glyphs render noticeably thinner than Latin at the same weight.
+     Bump weight slightly when the engine falls back to a CJK font. */
+  --font-weight-cjk-bold: 500;
   --font-mono: ui-monospace, 'JetBrains Mono', 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
 
   --color-bg: #fdfcf9;
@@ -29,6 +37,17 @@
   --color-rule: #2a2a30;
   --color-accent: #e08a64;
   --color-code-bg: #1f1f24;
+}
+
+/* Prevent Tailwind's preflight from resetting KaTeX styles. */
+.katex,
+.katex-display {
+  font-size: 1.1em !important;
+}
+.katex-display {
+  margin: 1.5em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 @layer base {
@@ -177,6 +196,7 @@ header, footer, li, ul, ol, span, h1, h2, h3, time {
   line-height: 1.8;
 }
 .prose p { margin-bottom: 1.4em; }
+.prose blockquote p { margin-bottom: 0; }
 .prose h2, .prose h3 {
   color: var(--color-fg);
   margin-top: 2.2em;
@@ -228,11 +248,46 @@ header, footer, li, ul, ol, span, h1, h2, h3, time {
 }
 
 /* CJK (Chinese) prose adjustments — tighter than English defaults. */
+
+/* CJK rendering strategy:
+   - Noto Serif SC weight 600 is self-hosted (see @import at top).
+   - The browser uses its font-matching algorithm: for CJK code points,
+     Fraunces has no glyphs, so it falls through to 'Noto Serif SC'.
+     Only the 600 cut is loaded, so the browser picks SemiBold for all
+     weights — giving Chinese text a heavier, more legible appearance
+     without affecting Latin (which stays on Fraunces at 400).
+   - A 'CJK Fallback' face below provides system-font fallbacks for
+     users on slow networks before the web font arrives. */
+@font-face {
+  font-family: 'CJK Fallback';
+  src: local('Source Han Serif SC SemiBold'), local('SourceHanSerifSC-SemiBold'),
+       local('Noto Serif SC SemiBold'), local('NotoSerifSC-SemiBold'),
+       local('Songti SC Bold'), local('STSongti-SC-Bold'),
+       local('Source Han Serif SC'), local('Noto Serif CJK SC'),
+       local('Songti SC'), local('STSong'), local('SimSun');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+2E80-2EFF, U+2F00-2FDF, U+3000-303F, U+3200-32FF,
+    U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF,
+    U+FE30-FE4F, U+FF00-FFEF, U+20000-2FFFF;
+}
+
+/* Let the browser synthesize bold for CJK fonts that lack heavier cuts. */
+html {
+  font-synthesis: weight style;
+  -webkit-font-synthesis: weight style;
+}
+
 :lang(zh) {
-  font-family: 'Noto Serif SC', var(--font-serif);
+  font-family: 'Noto Serif SC', 'CJK Fallback', var(--font-serif);
 }
 :lang(zh) .prose p {
   margin-bottom: 1.1em;
+}
+:lang(zh) .prose blockquote p {
+  margin-bottom: 0;
 }
 :lang(zh) .prose h2 {
   margin-top: 1.8em;

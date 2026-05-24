@@ -150,6 +150,28 @@ Tables should have minimal styling — just a bottom border per row.
 | Rust       | 2010 | Multi-paradigm  |
 | TypeScript | 2012 | Multi-paradigm  |
 
+## Math
+
+Inline math works with single dollar signs: the quadratic formula gives $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$.
+
+Block equations use double dollar signs:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} \, dx = \sqrt{\pi}
+$$
+
+A summation:
+
+$$
+\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
+$$
+
+Euler's identity in a block:
+
+$$
+e^{i\pi} + 1 = 0
+$$
+
 ## Horizontal rules
 
 A horizontal rule should appear as a thin line in the rule color:

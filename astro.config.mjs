@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import rehypePrettyCode from 'rehype-pretty-code';
 
 /** @type {import('rehype-pretty-code').Options} */
@@ -23,6 +25,7 @@ export default defineConfig({
 
   markdown: {
     syntaxHighlight: false,
-    rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex, [rehypePrettyCode, prettyCodeOptions]],
   },
 });
