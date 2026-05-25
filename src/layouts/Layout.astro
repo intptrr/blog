@@ -76,8 +76,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 					if (theme === 'dark') {
 						document.documentElement.classList.add('dark');
 					}
+					document.documentElement.setAttribute('data-theme', theme);
 				} catch (_) {
-					/* default = light */
+					document.documentElement.setAttribute('data-theme', 'light');
 				}
 			})();
 		</script>
@@ -123,5 +124,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
 					figure.appendChild(btn);
 				});
 		</script>
+
 	</body>
 </html>

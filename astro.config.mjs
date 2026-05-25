@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypePrettyCode from 'rehype-pretty-code';
+import mermaid from 'astro-mermaid';
 
 /** @type {import('rehype-pretty-code').Options} */
 const prettyCodeOptions = {
@@ -22,6 +23,16 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+
+  // astro-mermaid runs first so its remark plugin extracts mermaid blocks
+  // before rehype-pretty-code would syntax-highlight them.
+  integrations: [
+    mermaid({
+      theme: 'default',
+      autoTheme: true,
+      enableLog: false,
+    }),
+  ],
 
   markdown: {
     syntaxHighlight: false,

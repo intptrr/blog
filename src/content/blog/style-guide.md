@@ -172,6 +172,32 @@ $$
 e^{i\pi} + 1 = 0
 $$
 
+## Diagrams
+
+Mermaid diagrams are rendered to inline SVG at build time:
+
+```mermaid
+flowchart LR
+    A[Markdown] --> B{mermaid block}
+    B -- yes --> C[rehype-mermaid]
+    C --> D[Inline SVG]
+    B -- no --> E[rehype-pretty-code]
+    E --> F[Highlighted HTML]
+```
+
+A simple sequence diagram:
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant B as Browser
+    participant S as Static site
+    U->>B: Click link
+    B->>S: GET /blog/style-guide
+    S-->>B: HTML with inline SVG
+    B-->>U: Rendered page
+```
+
 ## Horizontal rules
 
 A horizontal rule should appear as a thin line in the rule color:

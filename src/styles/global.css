@@ -476,3 +476,28 @@ figure[data-rehype-pretty-code-figure]:has(.code-copy-btn)::after {
   display: none;
 }
 
+
+/* -----------------------------------------------------------
+   Mermaid diagrams (rendered client-side by astro-mermaid)
+   ----------------------------------------------------------- */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  padding: 1rem 0;
+  overflow-x: auto;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* astro-mermaid injects a subtle background tint on processed diagrams;
+   override it so the diagram blends with the page. */
+pre.mermaid,
+pre.mermaid[data-processed] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+}
