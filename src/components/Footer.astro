@@ -3,15 +3,15 @@ import { SITE_AUTHOR, SITE_EMAIL } from '../consts';
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-rule font-serif text-[0.85rem] text-fg-muted">
-	<div class="mx-auto max-w-[var(--container-measure)] px-5 pt-6 pb-8">
+<footer class="border-t border-rule font-serif text-[0.8rem] text-fg-muted sm:text-[0.85rem]">
+	<div class="mx-auto max-w-[var(--container-measure)] px-4 pt-6 pb-8 sm:px-5">
 		<div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-			<div>
-				<p class="m-0">
+			<div class="min-w-0 w-full">
+				<p class="m-0 break-words">
 					© {year} {SITE_AUTHOR} ·
 					<a
 						href={`mailto:${SITE_EMAIL}`}
-						class="text-fg-muted underline underline-offset-[3px] hover:text-fg"
+						class="text-fg-muted underline underline-offset-[3px] break-all hover:text-fg"
 					>{SITE_EMAIL}</a> ·
 					<a
 						href="/rss.xml"
@@ -20,12 +20,12 @@ const year = new Date().getFullYear();
 				</p>
 			</div>
 			<div
-				class="flex gap-[0.875rem] font-mono text-[0.75rem] text-fg-muted opacity-85"
+				class="flex flex-wrap gap-x-[0.875rem] gap-y-1 font-mono text-[0.7rem] text-fg-muted opacity-85 sm:text-[0.75rem] sm:flex-nowrap"
 				aria-hidden="true"
 			>
-				<span>[eip: 0x080483f4]</span>
-				<span>[esp: 0xbffff5c0]</span>
-				<span class="animate-pulse text-accent">● heap_leaked</span>
+				<span class="whitespace-nowrap">[eip: 0x080483f4]</span>
+				<span class="whitespace-nowrap">[esp: 0xbffff5c0]</span>
+				<span class="whitespace-nowrap animate-pulse text-accent">● heap_leaked</span>
 			</div>
 		</div>
 	</div>
