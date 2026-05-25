@@ -1,4 +1,4 @@
-# MEMORY.LEAK — personal blog
+# MEMORY.LEAK
 
 A small, fast, dependency-light personal blog built with [Astro](https://astro.build).
 
