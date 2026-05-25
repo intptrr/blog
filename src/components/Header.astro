@@ -152,5 +152,21 @@ function isActive(href: string) {
 	mobileNav?.querySelectorAll('a').forEach((a) =>
 		a.addEventListener('click', () => setOpen(false))
 	);
+
+	// Close on Escape
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+			setOpen(false);
+			(toggle as HTMLElement).focus();
+		}
+	});
+
+	// Close when tapping/clicking outside the menu or toggle
+	document.addEventListener('click', (e) => {
+		if (toggle?.getAttribute('aria-expanded') !== 'true') return;
+		const target = e.target as Node;
+		if (mobileNav?.contains(target) || toggle?.contains(target)) return;
+		setOpen(false);
+	});
 </script>
 </content>
