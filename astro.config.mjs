@@ -18,7 +18,7 @@ const prettyCodeOptions = {
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://example.com',
+  site: 'https://intptrr.cc',
 
   vite: {
     plugins: [tailwindcss()],

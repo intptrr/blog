@@ -33,6 +33,6 @@ Posts are Markdown in `src/content/blog/`; filename = URL slug. Schema is enforc
 
 ## Gotchas
 
-- `astro.config.mjs` `site` is still the placeholder `https://example.com` — affects RSS (`/rss.xml`) and canonical URLs. Update before treating prod URLs as real.
+- `astro.config.mjs` `site` is `https://intptrr.cc` — used by RSS (`/rss.xml`) and canonical URLs.
 - Site metadata (title, description, email, nav) lives in `src/consts.ts`.
 - `tsconfig.json` extends Astro's **strict** config.
