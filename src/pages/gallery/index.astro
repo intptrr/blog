@@ -25,10 +25,7 @@ const photos = Object.entries(modules)
 ---
 
 <Layout title="Gallery" description="Photographs." fullWidth>
-	<h1 class="text-center">Gallery</h1>
-	<p class="-mt-2 mb-8 text-center text-fg-muted">
-		{photos.length} photo{photos.length === 1 ? '' : 's'}.
-	</p>
+	<h1 class="mb-8 text-center">Gallery</h1>
 
 	{photos.length === 0 ? (
 		<div class="mx-auto w-full max-w-[var(--container-measure)] rounded-card border border-dashed border-rule bg-bg-soft px-6 py-12 text-center">
