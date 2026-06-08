@@ -9,15 +9,15 @@ function isActive(href: string) {
 }
 ---
 
-<header class="sticky top-0 z-50 border-b border-rule bg-bg/85 backdrop-blur-md">
+<header
+	id="site-header"
+	class="sticky top-0 z-50 border-b border-rule bg-bg/80 backdrop-blur-md"
+	data-header
+>
 	<div
-		class="mx-auto flex max-w-[var(--container-measure)] items-center gap-4 px-5 py-3 sm:gap-6"
+		class="header-inner mx-auto flex max-w-[var(--container-measure)] items-center gap-4 px-5 sm:gap-6"
 	>
-		<a
-			class="font-serif text-[1.35rem] font-bold tracking-[-0.01em] text-fg no-underline"
-			style="font-optical-sizing: auto; font-variation-settings: 'opsz' 144, 'SOFT' 100;"
-			href="/"
-		>
+		<a class="logo font-serif text-[1.35rem] font-bold tracking-[-0.01em] text-fg no-underline" href="/">
 			{SITE_TITLE}
 		</a>
 
@@ -27,7 +27,8 @@ function isActive(href: string) {
 			aria-label="Primary"
 			data-nav
 		>
-			<ul class="m-0 flex list-none flex-wrap items-center gap-6 p-0">
+			<ul id="nav-list" class="relative m-0 flex list-none items-center p-0">
+				<span class="nav-indicator" aria-hidden="true"></span>
 				{NAV_LINKS.map((link) => {
 					const active = isActive(link.href);
 					return (
@@ -36,20 +37,11 @@ function isActive(href: string) {
 								href={link.href}
 								aria-current={active ? 'page' : undefined}
 								class:list={[
-									'group relative inline-block py-1 font-sans text-[0.9rem] font-medium no-underline transition-colors duration-200 ease-in-out',
-									active ? 'text-fg' : 'text-fg-muted hover:text-fg',
+									'nav-link relative z-10 inline-block rounded-full px-3 py-1.5 font-sans text-[0.9rem] font-medium no-underline transition-colors duration-200 ease-out',
+									active ? 'text-accent' : 'text-fg-muted hover:text-fg',
 								]}
 							>
-								<span>{link.label}</span>
-								<span
-									class:list={[
-										'absolute -bottom-0.5 left-0 h-[1.5px] bg-accent transition-all duration-300 ease-out',
-										active
-											? 'w-full'
-											: 'w-0 group-hover:w-full',
-									]}
-									aria-hidden="true"
-								></span>
+								{link.label}
 							</a>
 						</li>
 					);
@@ -63,7 +55,7 @@ function isActive(href: string) {
 				type="button"
 				id="nav-toggle"
 				class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-rule text-fg-muted transition-colors hover:text-fg sm:hidden"
-				aria-controls="primary-nav"
+				aria-controls="primary-nav-mobile"
 				aria-expanded="false"
 				aria-label="Toggle navigation menu"
 			>
@@ -77,13 +69,14 @@ function isActive(href: string) {
 					aria-hidden="true"
 				>
 					<path
+						class="nav-icon-line"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						d="M4 7h16M4 12h16M4 17h16"
 						data-icon="open"
 					></path>
 					<path
-						class="hidden"
+						class="nav-icon-line hidden"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						d="M6 6l12 12M6 18L18 6"
@@ -94,46 +87,176 @@ function isActive(href: string) {
 		</div>
 	</div>
 
-	<nav
-		id="primary-nav-mobile"
-		class="hidden border-t border-rule sm:hidden"
-		aria-label="Primary mobile"
-		data-nav-mobile
-	>
-		<ul class="m-0 flex list-none flex-col gap-1 px-5 py-3 p-0">
-			{NAV_LINKS.map((link) => {
-				const active = isActive(link.href);
-				return (
-					<li>
-						<a
-							href={link.href}
-							aria-current={active ? 'page' : undefined}
-							class:list={[
-								'block rounded-md px-3 py-2 font-sans text-[0.95rem] font-medium no-underline transition-colors duration-200 ease-in-out',
-								active
-									? 'text-fg bg-fg/5'
-									: 'text-fg-muted hover:text-fg hover:bg-fg/5',
-							]}
-						>
-							{link.label}
-						</a>
-					</li>
-				);
-			})}
-		</ul>
-	</nav>
+	<div class="mobile-wrap sm:hidden" data-mobile-wrap>
+		<nav
+			id="primary-nav-mobile"
+			class="mobile-inner border-t border-rule"
+			aria-label="Primary mobile"
+			data-nav-mobile
+		>
+			<ul class="m-0 flex list-none flex-col gap-1 p-0 px-5 py-3">
+				{NAV_LINKS.map((link, i) => {
+					const active = isActive(link.href);
+					return (
+						<li class="mobile-item" style={`--i:${i}`}>
+							<a
+								href={link.href}
+								aria-current={active ? 'page' : undefined}
+								class:list={[
+									'block rounded-md px-3 py-2 font-sans text-[0.95rem] font-medium no-underline transition-colors duration-200 ease-out',
+									active
+										? 'bg-fg/5 text-accent'
+										: 'text-fg-muted hover:bg-fg/5 hover:text-fg',
+								]}
+							>
+								{link.label}
+							</a>
+						</li>
+					);
+				})}
+			</ul>
+		</nav>
+	</div>
 </header>
 
+<style>
+	/* Scroll-aware padding + shadow */
+	.header-inner {
+		padding-top: 0.75rem;
+		padding-bottom: 0.75rem;
+		transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	[data-header][data-scrolled] {
+		box-shadow: 0 1px 0 color-mix(in srgb, var(--color-fg) 6%, transparent),
+			0 8px 24px -16px color-mix(in srgb, var(--color-fg) 30%, transparent);
+	}
+	[data-header][data-scrolled] .header-inner {
+		padding-top: 0.45rem;
+		padding-bottom: 0.45rem;
+	}
+
+	/* Variable-font micro-interaction on the wordmark */
+	.logo {
+		font-optical-sizing: auto;
+		font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 0;
+		transition: font-variation-settings 0.4s ease, letter-spacing 0.4s ease;
+	}
+	.logo:hover {
+		font-variation-settings: 'opsz' 144, 'SOFT' 0, 'WONK' 1;
+		letter-spacing: 0;
+	}
+
+	/* Sliding "magic" indicator */
+	.nav-indicator {
+		position: absolute;
+		top: 50%;
+		left: 0;
+		height: calc(100% + 0.1rem);
+		width: 0;
+		transform: translate(0, -50%);
+		border-radius: 999px;
+		background: var(--color-bg-soft);
+		opacity: 0;
+		pointer-events: none;
+		will-change: transform, width;
+	}
+	#nav-list[data-ready] .nav-indicator {
+		transition:
+			transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+			width 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 0.2s ease;
+	}
+
+	/* Mobile drawer: height + fade + staggered items */
+	.mobile-wrap {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	.mobile-wrap[data-open] {
+		grid-template-rows: 1fr;
+	}
+	.mobile-inner {
+		overflow: hidden;
+		min-height: 0;
+	}
+	.mobile-item {
+		opacity: 0;
+		transform: translateY(-6px);
+		transition: opacity 0.25s ease, transform 0.25s ease;
+	}
+	.mobile-wrap[data-open] .mobile-item {
+		opacity: 1;
+		transform: translateY(0);
+		transition-delay: calc(var(--i) * 45ms + 60ms);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.header-inner,
+		.logo,
+		.nav-indicator,
+		.mobile-wrap,
+		.mobile-item {
+			transition: none !important;
+		}
+	}
+</style>
+
 <script>
+	// ---- Sliding indicator ----
+	const list = document.getElementById('nav-list');
+	const indicator = list?.querySelector<HTMLElement>('.nav-indicator');
+	const links = Array.from(list?.querySelectorAll<HTMLAnchorElement>('a') ?? []);
+	const activeLink = links.find((a) => a.getAttribute('aria-current') === 'page');
+
+	function moveTo(el: HTMLElement | undefined) {
+		if (!indicator || !el) return;
+		indicator.style.width = `${el.offsetWidth}px`;
+		indicator.style.transform = `translate(${el.offsetLeft}px, -50%)`;
+		indicator.style.opacity = '1';
+	}
+	function rest() {
+		if (activeLink) moveTo(activeLink);
+		else if (indicator) indicator.style.opacity = '0';
+	}
+
+	links.forEach((a) => a.addEventListener('pointerenter', () => moveTo(a)));
+	list?.addEventListener('pointerleave', rest);
+
+	function initIndicator() {
+		rest();
+		requestAnimationFrame(() => list?.setAttribute('data-ready', ''));
+	}
+	requestAnimationFrame(initIndicator);
+	if (document.fonts?.ready) document.fonts.ready.then(rest);
+	window.addEventListener('resize', rest);
+
+	// ---- Scroll-aware header ----
+	const header = document.getElementById('site-header');
+	let ticking = false;
+	function onScroll() {
+		if (ticking) return;
+		ticking = true;
+		requestAnimationFrame(() => {
+			if (window.scrollY > 8) header?.setAttribute('data-scrolled', '');
+			else header?.removeAttribute('data-scrolled');
+			ticking = false;
+		});
+	}
+	window.addEventListener('scroll', onScroll, { passive: true });
+	onScroll();
+
+	// ---- Mobile drawer ----
 	const toggle = document.getElementById('nav-toggle');
+	const wrap = document.querySelector<HTMLElement>('[data-mobile-wrap]');
 	const mobileNav = document.getElementById('primary-nav-mobile');
 	const iconOpen = toggle?.querySelector('[data-icon="open"]');
 	const iconClose = toggle?.querySelector('[data-icon="close"]');
 
 	function setOpen(open: boolean) {
-		if (!toggle || !mobileNav) return;
+		if (!toggle || !wrap) return;
 		toggle.setAttribute('aria-expanded', String(open));
-		mobileNav.classList.toggle('hidden', !open);
+		wrap.toggleAttribute('data-open', open);
 		iconOpen?.classList.toggle('hidden', open);
 		iconClose?.classList.toggle('hidden', !open);
 	}
@@ -143,17 +266,14 @@ function isActive(href: string) {
 		setOpen(!open);
 	});
 
-	// Close on resize to desktop
 	window.addEventListener('resize', () => {
 		if (window.innerWidth >= 640) setOpen(false);
 	});
 
-	// Close when a link is clicked
 	mobileNav?.querySelectorAll('a').forEach((a) =>
 		a.addEventListener('click', () => setOpen(false))
 	);
 
-	// Close on Escape
 	document.addEventListener('keydown', (e) => {
 		if (e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
 			setOpen(false);
@@ -161,12 +281,10 @@ function isActive(href: string) {
 		}
 	});
 
-	// Close when tapping/clicking outside the menu or toggle
 	document.addEventListener('click', (e) => {
 		if (toggle?.getAttribute('aria-expanded') !== 'true') return;
 		const target = e.target as Node;
-		if (mobileNav?.contains(target) || toggle?.contains(target)) return;
+		if (wrap?.contains(target) || toggle?.contains(target)) return;
 		setOpen(false);
 	});
 </script>
-</content>
