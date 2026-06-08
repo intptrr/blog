@@ -6,5 +6,6 @@ export const SITE_EMAIL = 'hi@intptrr.cc';
 export const NAV_LINKS = [
 	{ href: '/', label: 'Home' },
 	{ href: '/blog', label: 'Writing' },
+	{ href: '/gallery', label: 'Gallery' },
 	{ href: '/about', label: 'About' },
 ];
