@@ -10,6 +10,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "photos": "node scripts/process-photos.mjs",
     "astro": "astro"
   },
   "dependencies": {
