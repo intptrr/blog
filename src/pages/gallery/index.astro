@@ -6,7 +6,7 @@ import Layout from '../../layouts/Layout.astro';
 // Drop photos into `src/assets/gallery/` — they are picked up automatically,
 // optimized at build time, and sorted by filename (newest-named first).
 const modules = import.meta.glob<{ default: ImageMetadata }>(
-	'../../assets/gallery/*.{jpeg,jpg,png,webp,avif,gif}',
+	'../../assets/gallery/*.{jpeg,jpg,png,webp,avif,gif,JPEG,JPG,PNG,WEBP,AVIF,GIF}',
 	{ eager: true },
 );
 
@@ -29,10 +29,7 @@ const photos = Object.entries(modules)
 
 	{photos.length === 0 ? (
 		<div class="mx-auto w-full max-w-[var(--container-measure)] rounded-card border border-dashed border-rule bg-bg-soft px-6 py-12 text-center">
-			<p class="m-0 font-sans text-fg-muted">
-				No photos yet. Drop image files into
-				<code>src/assets/gallery/</code> and they'll show up here.
-			</p>
+			<p class="m-0 font-sans text-fg-muted">No photos yet.</p>
 		</div>
 	) : (
 		<div id="gallery" class="gallery-grid">
