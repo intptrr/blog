@@ -18,11 +18,11 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(vite@7.3.5(jiti@2.7.0)(lightningcss@1.32.0))
       astro:
-        specifier: ^6.4.4
-        version: 6.4.4(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1)
+        specifier: ^6.4.6
+        version: 6.4.6(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1)
       astro-mermaid:
         specifier: ^2.0.2
-        version: 2.0.2(astro@6.4.4(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1))(mermaid@11.15.0)
+        version: 2.0.2(astro@6.4.6(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1))(mermaid@11.15.0)
       mermaid:
         specifier: ^11.15.0
         version: 11.15.0
@@ -882,8 +882,8 @@ packages:
       '@mermaid-js/layout-elk':
         optional: true
 
-  astro@6.4.4:
-    resolution: {integrity: sha512-hVe8tq3lqt/Dr0UyB//yUmQSlHMTU8scTiF/vQddQVahLE4TTaSdH5H0nb7OvRcwo0UmlAO8DWYar4jNaS7H+A==}
+  astro@6.4.6:
+    resolution: {integrity: sha512-48OBTBKR9ctbf+DQxpOuxGl8ebfn59zTuNQMBzptmG/Mi/H8IdfMSbJgGuX1I/4U6g9yazG1p4BHlf4+2hWU4Q==}
     engines: {node: '>=22.12.0', npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -1848,6 +1848,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  semver@7.8.4:
+    resolution: {integrity: sha512-rUCObTnP32Q08R2uuIrt7r9PlEonuTmtuXYcW6s5kjdlj3xbnwe+21yXptAUYcMAABLkYYTtnmzb3w3EDZfueA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   sharp@0.34.5:
     resolution: {integrity: sha512-Ou9I5Ft9WNcCbXrU9cMgPBcCK8LiwLqcbywW3t4oDV37n1pzpuNLsYiAV8eODnjbtQlSDwZ2cUEeQz4E54Hltg==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
@@ -2776,15 +2781,15 @@ snapshots:
 
   array-iterate@2.0.1: {}
 
-  astro-mermaid@2.0.2(astro@6.4.4(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1))(mermaid@11.15.0):
+  astro-mermaid@2.0.2(astro@6.4.6(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1))(mermaid@11.15.0):
     dependencies:
-      astro: 6.4.4(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1)
+      astro: 6.4.6(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1)
       import-meta-resolve: 4.2.0
       mdast-util-to-string: 4.0.0
       mermaid: 11.15.0
       unist-util-visit: 5.1.0
 
-  astro@6.4.4(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1):
+  astro@6.4.6(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1):
     dependencies:
       '@astrojs/compiler': 4.0.0
       '@astrojs/internal-helpers': 0.10.0
@@ -2824,7 +2829,7 @@ snapshots:
       piccolore: 0.1.3
       picomatch: 4.0.4
       rehype: 13.0.2
-      semver: 7.8.2
+      semver: 7.8.4
       shiki: 4.2.0
       smol-toml: 1.6.1
       svgo: 4.0.1
@@ -4167,6 +4172,8 @@ snapshots:
   sax@1.6.0: {}
 
   semver@7.8.2: {}
+
+  semver@7.8.4: {}
 
   sharp@0.34.5:
     dependencies:
