@@ -27,7 +27,7 @@
     "rehype-pretty-code": "^0.14.5",
     "remark-math": "^6.0.0",
     "sharp": "^0.35.3",
-    "shiki": "^4.4.2",
+    "shiki": "^4.4.3",
     "tailwindcss": "^4.3.3"
   }
 }
