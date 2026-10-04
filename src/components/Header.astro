@@ -87,7 +87,7 @@ function isActive(href: string) {
 		</div>
 	</div>
 
-	<div class="mobile-wrap sm:hidden" data-mobile-wrap>
+	<div class="mobile-wrap sm:hidden" data-mobile-wrap inert>
 		<nav
 			id="primary-nav-mobile"
 			class="mobile-inner border-t border-rule"
@@ -257,6 +257,7 @@ function isActive(href: string) {
 		if (!toggle || !wrap) return;
 		toggle.setAttribute('aria-expanded', String(open));
 		wrap.toggleAttribute('data-open', open);
+		wrap.toggleAttribute('inert', !open);
 		iconOpen?.classList.toggle('hidden', open);
 		iconClose?.classList.toggle('hidden', !open);
 	}
