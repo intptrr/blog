@@ -20,6 +20,8 @@ const prettyCodeOptions = {
 export default defineConfig({
   site: 'https://intptrr.cc',
 
+  compressHTML: true,
+
   vite: {
     plugins: [tailwindcss()],
   },
